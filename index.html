@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Collections — Exerciții Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1117;--sf:#1a1d27;--sf2:#222635;--bd:#2e3347;--tx:#e2e4ed;--txm:#8b8fa7;--list:#22d3ee;--set:#a78bfa;--que:#34d399;--mix:#60a5fa;--grn:#22c55e;--red:#ef4444;--yel:#eab308;--cbg:#141620}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;line-height:1.7}
+.hero{padding:3rem 2rem 2rem;text-align:center;background:linear-gradient(180deg,#161929,var(--bg));border-bottom:1px solid var(--bd);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(96,165,250,.08),transparent 70%);pointer-events:none}
+.hero h1{font-family:'JetBrains Mono',monospace;font-size:clamp(1.6rem,4vw,2.4rem);font-weight:700;letter-spacing:-.5px;margin-bottom:.5rem;position:relative}
+.hero h1 span{color:var(--mix)}
+.hero p{color:var(--txm);font-size:1rem;max-width:560px;margin:0 auto}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:1rem;margin-top:1.5rem}
+.legend-item{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--txm)}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+.tabs{display:flex;justify-content:center;gap:.5rem;padding:1.5rem 1rem 0;flex-wrap:wrap}
+.tab-btn{padding:.5rem 1.2rem;border:1px solid var(--bd);border-radius:8px;background:var(--sf);color:var(--txm);font-family:'JetBrains Mono',monospace;font-size:.82rem;cursor:pointer;transition:all .2s}
+.tab-btn:hover{border-color:var(--mix);color:var(--tx)}
+.tab-btn.active{background:var(--mix);color:var(--bg);border-color:var(--mix);font-weight:600}
+.container{max-width:900px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
+.exercise{background:var(--sf);border:1px solid var(--bd);border-radius:12px;margin-bottom:1.5rem;overflow:hidden;display:none;animation:fadeIn .3s ease}
+.exercise.visible{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ex-header{padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1rem;cursor:pointer;user-select:none;transition:background .15s}
+.ex-header:hover{background:var(--sf2)}
+.ex-num{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.75rem;padding:.25rem .6rem;border-radius:6px;white-space:nowrap;flex-shrink:0}
+.ex-title{flex:1;font-weight:600;font-size:.95rem}
+.diff{font-size:.7rem;font-family:'JetBrains Mono',monospace;padding:.2rem .5rem;border-radius:4px;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
+.d-e{background:rgba(34,197,94,.15);color:var(--grn)}
+.d-m{background:rgba(234,179,8,.15);color:var(--yel)}
+.d-h{background:rgba(239,68,68,.15);color:var(--red)}
+.chv{width:20px;height:20px;color:var(--txm);transition:transform .25s;flex-shrink:0}
+.exercise.open .chv{transform:rotate(180deg)}
+.ex-body{max-height:0;overflow:hidden;transition:max-height .4s ease}
+.exercise.open .ex-body{max-height:5000px}
+.ex-content{padding:0 1.5rem 1.5rem;border-top:1px solid var(--bd)}
+.ex-content h4{font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--txm);text-transform:uppercase;letter-spacing:1px;margin:1.2rem 0 .6rem}
+.ex-content p,.ex-content li{font-size:.9rem;line-height:1.8}
+.ex-content ul{padding-left:1.2rem;margin-bottom:.5rem}
+.ex-content ul li::marker{color:var(--txm)}
+pre{background:var(--cbg);border:1px solid var(--bd);border-radius:8px;padding:1rem 1.2rem;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.8rem;line-height:1.65;margin:.5rem 0;color:#c9cce0}
+.k{color:#c084fc}.t{color:#22d3ee}.s{color:#34d399}.c{color:#5c6078;font-style:italic}.n{color:#fb923c}.a{color:#fbbf24}
+.hint-btn,.sol-btn{display:inline-flex;align-items:center;gap:.4rem;margin-top:.5rem;padding:.4rem .9rem;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.75rem;cursor:pointer;transition:all .2s;margin-right:.5rem}
+.hint-btn{background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.25);color:var(--mix)}
+.hint-btn:hover{background:rgba(96,165,250,.2)}
+.sol-btn{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--grn)}
+.sol-btn:hover{background:rgba(34,197,94,.2)}
+.hint-text,.sol-code{display:none;margin-top:.6rem}
+.hint-text{padding:.8rem 1rem;background:rgba(96,165,250,.06);border-left:3px solid var(--mix);border-radius:0 6px 6px 0;font-size:.85rem;color:var(--txm)}
+.hint-text.show,.sol-code.show{display:block}
+.cat-list .ex-num{background:rgba(34,211,238,.15);color:var(--list)}
+.cat-set .ex-num{background:rgba(167,139,250,.15);color:var(--set)}
+.cat-queue .ex-num{background:rgba(52,211,153,.15);color:var(--que)}
+.cat-mixed .ex-num{background:rgba(96,165,250,.15);color:var(--mix)}
+.score-bar{position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--bd);padding:.7rem 1.5rem;display:flex;align-items:center;justify-content:center;gap:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;z-index:100;backdrop-filter:blur(10px)}
+.score-bar span{color:var(--txm)}.score-bar strong{color:var(--mix)}
+@media(max-width:600px){.container{padding:1rem 1rem 4rem}.ex-content{padding:0 1rem 1rem}pre{font-size:.72rem;padding:.8rem}.tabs{gap:.35rem}.tab-btn{padding:.4rem .8rem;font-size:.75rem}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>Java <span>Collections</span> — Exerciții</h1>
+  <p>15 exerciții practice pe List, Set, Queue/Deque și probleme mixte.</p>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--list)"></div>List</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--set)"></div>Set</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--que)"></div>Queue / Deque</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--mix)"></div>Mixt</div>
+  </div>
+</div>
+<div class="tabs">
+  <button class="tab-btn active" data-cat="all">Toate</button>
+  <button class="tab-btn" data-cat="list">List</button>
+  <button class="tab-btn" data-cat="set">Set</button>
+  <button class="tab-btn" data-cat="queue">Queue</button>
+  <button class="tab-btn" data-cat="mixed">Mixt</button>
+</div>
+<div class="container" id="exercises">
+
+<!-- ════════ LIST ════════ -->
+
+<div class="exercise cat-list" data-cat="list">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">L-01</span>
+    <span class="ex-title">Inversare ArrayList fără Collections.reverse()</span>
+    <span class="diff d-e">Easy</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Scrie o metodă generică <code>&lt;T&gt; void reverseList(List&lt;T&gt; list)</code> care inversează elementele in-place, folosind doar <code>get()</code>, <code>set()</code> și <code>size()</code>.</p>
+    <h4>Testare</h4>
+<pre>[1, 2, 3, 4, 5]  →  [5, 4, 3, 2, 1]
+["a", "b", "c"]  →  ["c", "b", "a"]
+[]                →  []</pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Tehnica cu doi pointeri: swap elementele de la index <code>i</code> cu cele de la <code>size - 1 - i</code>, mergând până la jumătate.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static</span> &lt;<span class="t">T</span>&gt; <span class="k">void</span> reverseList(<span class="t">List</span>&lt;<span class="t">T</span>&gt; list) {
+    <span class="k">int</span> n = list.size();
+    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; n / <span class="n">2</span>; i++) {
+        <span class="t">T</span> temp = list.get(i);
+        list.set(i, list.get(n - <span class="n">1</span> - i));
+        list.set(n - <span class="n">1</span> - i, temp);
+    }
+}
+<span class="c">// O(n) timp, O(1) spațiu</span></pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-list" data-cat="list">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">L-02</span>
+    <span class="ex-title">Eliminare duplicate păstrând ordinea</span>
+    <span class="diff d-e">Easy</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Dată o <code>List&lt;Integer&gt;</code>, returnează o nouă listă fără duplicate, păstrând prima apariție. Nu folosi <code>Stream.distinct()</code>.</p>
+<pre><span class="c">// Input:</span>  [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]
+<span class="c">// Output:</span> [3, 1, 4, 5, 9, 2, 6]</pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Iterează cu un <code>HashSet&lt;Integer&gt; seen</code> — adaugi în lista nouă doar dacă <code>seen.add(elem)</code> returnează <code>true</code>.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static</span> <span class="t">List</span>&lt;<span class="t">Integer</span>&gt; removeDuplicates(<span class="t">List</span>&lt;<span class="t">Integer</span>&gt; list) {
+    <span class="t">Set</span>&lt;<span class="t">Integer</span>&gt; seen = <span class="k">new</span> <span class="t">HashSet</span>&lt;&gt;();
+    <span class="t">List</span>&lt;<span class="t">Integer</span>&gt; result = <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;();
+    <span class="k">for</span> (<span class="t">Integer</span> elem : list) {
+        <span class="k">if</span> (seen.add(elem)) {
+            result.add(elem);
+        }
+    }
+    <span class="k">return</span> result;
+}
+<span class="c">// One-liner: new ArrayList&lt;&gt;(new LinkedHashSet&lt;&gt;(list))</span></pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-list" data-cat="list">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">L-03</span>
+    <span class="ex-title">Partition List cu Predicate</span>
+    <span class="diff d-m">Medium</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Scrie o metodă generică ce primește o <code>List&lt;T&gt;</code> și un <code>Predicate&lt;T&gt;</code> și returnează două liste: [matching, nonMatching].</p>
+<pre><span class="c">// Input:</span>  [1, 2, 3, 4, 5, 6], predicate: n -&gt; n % 2 == 0
+<span class="c">// Output:</span> [[2, 4, 6], [1, 3, 5]]</pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Creează două ArrayList-uri, iterează și adaugă fiecare element după <code>predicate.test(item)</code>.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static</span> &lt;<span class="t">T</span>&gt; <span class="t">List</span>&lt;<span class="t">List</span>&lt;<span class="t">T</span>&gt;&gt; partition(
+        <span class="t">List</span>&lt;<span class="t">T</span>&gt; list, <span class="t">Predicate</span>&lt;<span class="t">T</span>&gt; pred) {
+    <span class="t">List</span>&lt;<span class="t">T</span>&gt; yes = <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;();
+    <span class="t">List</span>&lt;<span class="t">T</span>&gt; no  = <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;();
+    <span class="k">for</span> (<span class="t">T</span> item : list) {
+        (pred.test(item) ? yes : no).add(item);
+    }
+    <span class="k">return</span> <span class="t">List</span>.of(yes, no);
+}</pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-list" data-cat="list">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">L-04</span>
+    <span class="ex-title">Merge Sort pe LinkedList</span>
+    <span class="diff d-h">Hard</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Implementează Merge Sort pe o <code>LinkedList&lt;Integer&gt;</code> fără conversie la array. Nu folosi <code>Collections.sort()</code>. Complexitate O(n log n).</p>
+<pre><span class="c">// Input:</span>  [38, 27, 43, 3, 9, 82, 10]
+<span class="c">// Output:</span> [3, 9, 10, 27, 38, 43, 82]</pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Split cu <code>subList(0, mid)</code> și <code>subList(mid, size)</code>, copiază în LinkedList-uri noi, aplică recursiv, merge cu doi iteratori.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static</span> <span class="t">LinkedList</span>&lt;<span class="t">Integer</span>&gt; mergeSort(<span class="t">LinkedList</span>&lt;<span class="t">Integer</span>&gt; list) {
+    <span class="k">if</span> (list.size() &lt;= <span class="n">1</span>) <span class="k">return</span> list;
+    <span class="k">int</span> mid = list.size() / <span class="n">2</span>;
+    <span class="t">LinkedList</span>&lt;<span class="t">Integer</span>&gt; left  = <span class="k">new</span> <span class="t">LinkedList</span>&lt;&gt;(list.subList(<span class="n">0</span>, mid));
+    <span class="t">LinkedList</span>&lt;<span class="t">Integer</span>&gt; right = <span class="k">new</span> <span class="t">LinkedList</span>&lt;&gt;(list.subList(mid, list.size()));
+    left = mergeSort(left);
+    right = mergeSort(right);
+    <span class="k">return</span> merge(left, right);
+}
+
+<span class="k">private static</span> <span class="t">LinkedList</span>&lt;<span class="t">Integer</span>&gt; merge(
+        <span class="t">LinkedList</span>&lt;<span class="t">Integer</span>&gt; a, <span class="t">LinkedList</span>&lt;<span class="t">Integer</span>&gt; b) {
+    <span class="t">LinkedList</span>&lt;<span class="t">Integer</span>&gt; res = <span class="k">new</span> <span class="t">LinkedList</span>&lt;&gt;();
+    <span class="t">Iterator</span>&lt;<span class="t">Integer</span>&gt; itA = a.iterator(), itB = b.iterator();
+    <span class="t">Integer</span> vA = itA.hasNext() ? itA.next() : <span class="k">null</span>;
+    <span class="t">Integer</span> vB = itB.hasNext() ? itB.next() : <span class="k">null</span>;
+    <span class="k">while</span> (vA != <span class="k">null</span> && vB != <span class="k">null</span>) {
+        <span class="k">if</span> (vA &lt;= vB) { res.add(vA); vA = itA.hasNext() ? itA.next() : <span class="k">null</span>; }
+        <span class="k">else</span>          { res.add(vB); vB = itB.hasNext() ? itB.next() : <span class="k">null</span>; }
+    }
+    <span class="k">if</span> (vA != <span class="k">null</span>) res.add(vA);
+    <span class="k">if</span> (vB != <span class="k">null</span>) res.add(vB);
+    itA.forEachRemaining(res::add);
+    itB.forEachRemaining(res::add);
+    <span class="k">return</span> res;
+}</pre>
+    </div>
+  </div></div>
+</div>
+
+<!-- ════════ SET ════════ -->
+
+<div class="exercise cat-set" data-cat="set">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">S-01</span>
+    <span class="ex-title">Operații pe Mulțimi: Union, Intersection, Difference</span>
+    <span class="diff d-e">Easy</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Implementează 3 metode statice generice: <code>union</code>, <code>intersection</code>, <code>difference</code>.</p>
+<pre><span class="c">A = {1, 2, 3, 4}    B = {3, 4, 5, 6}</span>
+<span class="c">union      → {1, 2, 3, 4, 5, 6}</span>
+<span class="c">intersect  → {3, 4}</span>
+<span class="c">difference → {1, 2}</span></pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Creează un nou HashSet din <code>a</code>, apoi: <code>addAll(b)</code> = union, <code>retainAll(b)</code> = intersect, <code>removeAll(b)</code> = difference.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static</span> &lt;<span class="t">T</span>&gt; <span class="t">Set</span>&lt;<span class="t">T</span>&gt; union(<span class="t">Set</span>&lt;<span class="t">T</span>&gt; a, <span class="t">Set</span>&lt;<span class="t">T</span>&gt; b) {
+    <span class="t">Set</span>&lt;<span class="t">T</span>&gt; r = <span class="k">new</span> <span class="t">HashSet</span>&lt;&gt;(a); r.addAll(b); <span class="k">return</span> r;
+}
+<span class="k">public static</span> &lt;<span class="t">T</span>&gt; <span class="t">Set</span>&lt;<span class="t">T</span>&gt; intersection(<span class="t">Set</span>&lt;<span class="t">T</span>&gt; a, <span class="t">Set</span>&lt;<span class="t">T</span>&gt; b) {
+    <span class="t">Set</span>&lt;<span class="t">T</span>&gt; r = <span class="k">new</span> <span class="t">HashSet</span>&lt;&gt;(a); r.retainAll(b); <span class="k">return</span> r;
+}
+<span class="k">public static</span> &lt;<span class="t">T</span>&gt; <span class="t">Set</span>&lt;<span class="t">T</span>&gt; difference(<span class="t">Set</span>&lt;<span class="t">T</span>&gt; a, <span class="t">Set</span>&lt;<span class="t">T</span>&gt; b) {
+    <span class="t">Set</span>&lt;<span class="t">T</span>&gt; r = <span class="k">new</span> <span class="t">HashSet</span>&lt;&gt;(a); r.removeAll(b); <span class="k">return</span> r;
+}</pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-set" data-cat="set">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">S-02</span>
+    <span class="ex-title">Custom Object în HashSet — equals / hashCode</span>
+    <span class="diff d-m">Medium</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Creează <code>Student(int id, String name, double gpa)</code>. Egalitate pe <code>id</code>. Override <code>equals()</code> și <code>hashCode()</code>, demonstrează în HashSet.</p>
+<pre><span class="t">Set</span>&lt;<span class="t">Student</span>&gt; s = <span class="k">new</span> <span class="t">HashSet</span>&lt;&gt;();
+s.add(<span class="k">new</span> Student(<span class="n">1</span>, <span class="s">"Ana"</span>, <span class="n">9.5</span>));
+s.add(<span class="k">new</span> Student(<span class="n">1</span>, <span class="s">"Ana Maria"</span>, <span class="n">9.8</span>)); <span class="c">// same id!</span>
+s.add(<span class="k">new</span> Student(<span class="n">2</span>, <span class="s">"Bogdan"</span>, <span class="n">8.7</span>));
+<span class="c">// s.size() == 2</span></pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Contract: <code>a.equals(b) → a.hashCode() == b.hashCode()</code>. hashCode bazat pe id: <code>return Integer.hashCode(id);</code></div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public class</span> <span class="t">Student</span> {
+    <span class="k">private int</span> id;
+    <span class="k">private</span> <span class="t">String</span> name;
+    <span class="k">private double</span> gpa;
+    <span class="c">// constructor, getters...</span>
+
+    <span class="a">@Override</span>
+    <span class="k">public boolean</span> equals(<span class="t">Object</span> o) {
+        <span class="k">if</span> (<span class="k">this</span> == o) <span class="k">return true</span>;
+        <span class="k">if</span> (o == <span class="k">null</span> || getClass() != o.getClass()) <span class="k">return false</span>;
+        <span class="k">return this</span>.id == ((<span class="t">Student</span>) o).id;
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public int</span> hashCode() {
+        <span class="k">return</span> <span class="t">Integer</span>.hashCode(id);
+    }
+}</pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-set" data-cat="set">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">S-03</span>
+    <span class="ex-title">Primul caracter ne-repetat — LinkedHashMap</span>
+    <span class="diff d-e">Easy</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Dat un string, găsește primul caracter care apare o singură dată. Fără Streams.</p>
+<pre><span class="s">"aabccbdefe"</span> → <span class="s">'d'</span>
+<span class="s">"aabbcc"</span>     → <span class="k">null</span></pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text"><code>LinkedHashMap&lt;Character, Integer&gt;</code> pentru frecvențe (păstrează ordinea inserției), apoi iterează și returnează primul cu count == 1.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static</span> <span class="t">Character</span> firstUnique(<span class="t">String</span> s) {
+    <span class="t">Map</span>&lt;<span class="t">Character</span>, <span class="t">Integer</span>&gt; freq = <span class="k">new</span> <span class="t">LinkedHashMap</span>&lt;&gt;();
+    <span class="k">for</span> (<span class="k">char</span> c : s.toCharArray())
+        freq.merge(c, <span class="n">1</span>, <span class="t">Integer</span>::sum);
+    <span class="k">for</span> (<span class="k">var</span> e : freq.entrySet())
+        <span class="k">if</span> (e.getValue() == <span class="n">1</span>) <span class="k">return</span> e.getKey();
+    <span class="k">return null</span>;
+}</pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-set" data-cat="set">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">S-04</span>
+    <span class="ex-title">TreeSet — Interval Scheduling (Calendar)</span>
+    <span class="diff d-h">Hard</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Cu <code>record Interval(int start, int end)</code> și un <code>TreeSet</code>, implementează:</p>
+    <ul>
+      <li><code>boolean book(Interval i)</code> — adaugă dacă NU se suprapune</li>
+      <li><code>Set&lt;Interval&gt; getBookings()</code> — toate, sortate</li>
+    </ul>
+<pre>book([<span class="n">10</span>,<span class="n">20</span>]) → <span class="k">true</span>
+book([<span class="n">15</span>,<span class="n">25</span>]) → <span class="k">false</span>  <span class="c">// overlap</span>
+book([<span class="n">20</span>,<span class="n">30</span>]) → <span class="k">true</span>
+book([<span class="n">5</span>,<span class="n">10</span>])  → <span class="k">true</span></pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Sortează după <code>start</code>. Folosește <code>floor()</code> și <code>ceiling()</code> din NavigableSet ca să verifici doar vecinii — O(log n).</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">record</span> <span class="t">Interval</span>(<span class="k">int</span> start, <span class="k">int</span> end) {}
+
+<span class="k">public class</span> <span class="t">Calendar</span> {
+    <span class="k">private</span> <span class="t">TreeSet</span>&lt;<span class="t">Interval</span>&gt; bk =
+        <span class="k">new</span> <span class="t">TreeSet</span>&lt;&gt;(<span class="t">Comparator</span>.comparingInt(<span class="t">Interval</span>::start));
+
+    <span class="k">public boolean</span> book(<span class="t">Interval</span> i) {
+        <span class="t">Interval</span> lo = bk.floor(i);
+        <span class="t">Interval</span> hi = bk.ceiling(i);
+        <span class="k">if</span> (lo != <span class="k">null</span> && lo.end() > i.start()) <span class="k">return false</span>;
+        <span class="k">if</span> (hi != <span class="k">null</span> && hi.start() &lt; i.end()) <span class="k">return false</span>;
+        bk.add(i);
+        <span class="k">return true</span>;
+    }
+}
+<span class="c">// O(log n) per book() datorită TreeSet</span></pre>
+    </div>
+  </div></div>
+</div>
+
+<!-- ════════ QUEUE / DEQUE ════════ -->
+
+<div class="exercise cat-queue" data-cat="queue">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">Q-01</span>
+    <span class="ex-title">Stack cu Deque — Verificare Paranteze</span>
+    <span class="diff d-e">Easy</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Verifică dacă un string are paranteze echilibrate: <code>()[]&#123;&#125;</code>. Folosește <code>ArrayDeque</code> (nu <code>Stack</code> legacy).</p>
+<pre><span class="s">"({[]})"</span> → <span class="k">true</span>     <span class="s">"([)]"</span> → <span class="k">false</span>
+<span class="s">""</span>       → <span class="k">true</span>     <span class="s">"((("</span>  → <span class="k">false</span></pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Push paranteza de închidere corespunzătoare. La closing bracket, verifică top == ea. La final, stack gol = valid.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static boolean</span> isBalanced(<span class="t">String</span> s) {
+    <span class="t">Deque</span>&lt;<span class="t">Character</span>&gt; stack = <span class="k">new</span> <span class="t">ArrayDeque</span>&lt;&gt;();
+    <span class="k">for</span> (<span class="k">char</span> c : s.toCharArray()) {
+        <span class="k">if</span> (c == <span class="s">'('</span>) stack.push(<span class="s">')'</span>);
+        <span class="k">else if</span> (c == <span class="s">'['</span>) stack.push(<span class="s">']'</span>);
+        <span class="k">else if</span> (c == <span class="s">'{'</span>) stack.push(<span class="s">'}'</span>);
+        <span class="k">else if</span> (c == <span class="s">')'</span> || c == <span class="s">']'</span> || c == <span class="s">'}'</span>) {
+            <span class="k">if</span> (stack.isEmpty() || stack.pop() != c) <span class="k">return false</span>;
+        }
+    }
+    <span class="k">return</span> stack.isEmpty();
+}</pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-queue" data-cat="queue">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">Q-02</span>
+    <span class="ex-title">PriorityQueue — Top K Elemente</span>
+    <span class="diff d-m">Medium</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Dat un array și <code>k</code>, returnează cele mai mari <code>k</code> elemente cu <code>PriorityQueue</code> (min-heap de size k). Complexitate O(n log k).</p>
+<pre><span class="c">Input:</span>  [3, 1, 5, 12, 2, 11, 7], k=3
+<span class="c">Output:</span> [7, 11, 12]</pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Min-heap de size k. Dacă size &lt; k → add. Dacă elem &gt; peek() → poll + add.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static</span> <span class="t">List</span>&lt;<span class="t">Integer</span>&gt; topK(<span class="k">int</span>[] arr, <span class="k">int</span> k) {
+    <span class="t">PriorityQueue</span>&lt;<span class="t">Integer</span>&gt; heap = <span class="k">new</span> <span class="t">PriorityQueue</span>&lt;&gt;(k);
+    <span class="k">for</span> (<span class="k">int</span> n : arr) {
+        <span class="k">if</span> (heap.size() &lt; k) heap.offer(n);
+        <span class="k">else if</span> (n > heap.peek()) { heap.poll(); heap.offer(n); }
+    }
+    <span class="t">List</span>&lt;<span class="t">Integer</span>&gt; res = <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;(heap);
+    <span class="t">Collections</span>.sort(res);
+    <span class="k">return</span> res;
+}
+<span class="c">// O(n log k) — mai bun decât O(n log n) sort complet</span></pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-queue" data-cat="queue">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">Q-03</span>
+    <span class="ex-title">Sliding Window Maximum — Deque O(n)</span>
+    <span class="diff d-h">Hard</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Dat un array și fereastră <code>k</code>, returnează maximul din fiecare fereastră. O(n).</p>
+<pre><span class="c">Input:</span>  [1, 3, -1, -3, 5, 3, 6, 7], k=3
+<span class="c">Output:</span> [3, 3, 5, 5, 6, 7]
+<span class="c">// [1,3,-1] [3,-1,-3] [-1,-3,5] [-3,5,3] [5,3,6] [3,6,7]</span></pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text"><code>ArrayDeque&lt;Integer&gt;</code> cu indecși, descrescător (front = max). Elimină din spate valorile ≤ noul elem. Elimină din față indecșii ieșiți din fereastră.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static int</span>[] maxSlidingWindow(<span class="k">int</span>[] nums, <span class="k">int</span> k) {
+    <span class="k">int</span>[] res = <span class="k">new int</span>[nums.length - k + <span class="n">1</span>];
+    <span class="t">Deque</span>&lt;<span class="t">Integer</span>&gt; dq = <span class="k">new</span> <span class="t">ArrayDeque</span>&lt;&gt;();
+    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; nums.length; i++) {
+        <span class="k">while</span> (!dq.isEmpty() && dq.peekFirst() &lt; i - k + <span class="n">1</span>)
+            dq.pollFirst();
+        <span class="k">while</span> (!dq.isEmpty() && nums[dq.peekLast()] &lt;= nums[i])
+            dq.pollLast();
+        dq.offerLast(i);
+        <span class="k">if</span> (i >= k - <span class="n">1</span>)
+            res[i - k + <span class="n">1</span>] = nums[dq.peekFirst()];
+    }
+    <span class="k">return</span> res;
+}
+<span class="c">// Fiecare element intră/iese din deque maxim o dată → O(n)</span></pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-queue" data-cat="queue">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">Q-04</span>
+    <span class="ex-title">Task Scheduler — PriorityQueue + Cooldown</span>
+    <span class="diff d-h">Hard</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Task-uri (caractere) cu cooldown <code>n</code> între execuțiile aceluiași task. Returnează timpul minim total.</p>
+<pre><span class="c">Input:</span>  tasks=['A','A','A','B','B','B'], n=2
+<span class="c">Output:</span> 8
+<span class="c">// A → B → idle → A → B → idle → A → B</span></pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Greedy: mereu execută task-ul cu cele mai multe apariții care nu e în cooldown. Max-heap pe frecvențe + Queue pentru cooldown tracking.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static int</span> leastInterval(<span class="k">char</span>[] tasks, <span class="k">int</span> n) {
+    <span class="k">int</span>[] freq = <span class="k">new int</span>[<span class="n">26</span>];
+    <span class="k">for</span> (<span class="k">char</span> t : tasks) freq[t - <span class="s">'A'</span>]++;
+
+    <span class="t">PriorityQueue</span>&lt;<span class="t">Integer</span>&gt; maxH =
+        <span class="k">new</span> <span class="t">PriorityQueue</span>&lt;&gt;(<span class="t">Collections</span>.reverseOrder());
+    <span class="k">for</span> (<span class="k">int</span> f : freq) <span class="k">if</span> (f > <span class="n">0</span>) maxH.offer(f);
+
+    <span class="t">Queue</span>&lt;<span class="k">int</span>[]&gt; cooldown = <span class="k">new</span> <span class="t">LinkedList</span>&lt;&gt;();
+    <span class="k">int</span> time = <span class="n">0</span>;
+
+    <span class="k">while</span> (!maxH.isEmpty() || !cooldown.isEmpty()) {
+        time++;
+        <span class="k">if</span> (!maxH.isEmpty()) {
+            <span class="k">int</span> rem = maxH.poll() - <span class="n">1</span>;
+            <span class="k">if</span> (rem > <span class="n">0</span>) cooldown.offer(<span class="k">new int</span>[]{rem, time + n});
+        }
+        <span class="k">if</span> (!cooldown.isEmpty() && cooldown.peek()[<span class="n">1</span>] == time)
+            maxH.offer(cooldown.poll()[<span class="n">0</span>]);
+    }
+    <span class="k">return</span> time;
+}</pre>
+    </div>
+  </div></div>
+</div>
+
+<!-- ════════ MIXED ════════ -->
+
+<div class="exercise cat-mixed" data-cat="mixed">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">X-01</span>
+    <span class="ex-title">Two Sum — HashMap lookup O(n)</span>
+    <span class="diff d-e">Easy</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Dat un array și un target, returnează indicii a două elemente care însumează target-ul. O(n).</p>
+<pre><span class="c">Input:</span>  nums=[2, 7, 11, 15], target=9
+<span class="c">Output:</span> [0, 1]  <span class="c">// 2 + 7 = 9</span></pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Pentru fiecare num, caută <code>target - num</code> în map. Dacă nu există, pune <code>map.put(num, index)</code>.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static int</span>[] twoSum(<span class="k">int</span>[] nums, <span class="k">int</span> target) {
+    <span class="t">Map</span>&lt;<span class="t">Integer</span>, <span class="t">Integer</span>&gt; map = <span class="k">new</span> <span class="t">HashMap</span>&lt;&gt;();
+    <span class="k">for</span> (<span class="k">int</span> i = <span class="n">0</span>; i &lt; nums.length; i++) {
+        <span class="k">int</span> comp = target - nums[i];
+        <span class="k">if</span> (map.containsKey(comp))
+            <span class="k">return new int</span>[]{map.get(comp), i};
+        map.put(nums[i], i);
+    }
+    <span class="k">throw new</span> <span class="t">IllegalArgumentException</span>(<span class="s">"No solution"</span>);
+}</pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-mixed" data-cat="mixed">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">X-02</span>
+    <span class="ex-title">Grupare Anagrame</span>
+    <span class="diff d-m">Medium</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Dată o listă de stringuri, grupează anagramele.</p>
+<pre><span class="c">Input:</span>  ["eat","tea","tan","ate","nat","bat"]
+<span class="c">Output:</span> [["eat","tea","ate"], ["tan","nat"], ["bat"]]</pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Sortează literele → <code>"eat" → "aet"</code>. Asta devine cheia de grupare.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public static</span> <span class="t">List</span>&lt;<span class="t">List</span>&lt;<span class="t">String</span>&gt;&gt; groupAnagrams(<span class="t">String</span>[] strs) {
+    <span class="t">Map</span>&lt;<span class="t">String</span>, <span class="t">List</span>&lt;<span class="t">String</span>&gt;&gt; map = <span class="k">new</span> <span class="t">HashMap</span>&lt;&gt;();
+    <span class="k">for</span> (<span class="t">String</span> s : strs) {
+        <span class="k">char</span>[] ch = s.toCharArray();
+        <span class="t">Arrays</span>.sort(ch);
+        map.computeIfAbsent(<span class="k">new</span> <span class="t">String</span>(ch), k -> <span class="k">new</span> <span class="t">ArrayList</span>&lt;&gt;())
+           .add(s);
+    }
+    <span class="k">return new</span> <span class="t">ArrayList</span>&lt;&gt;(map.values());
+}</pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-mixed" data-cat="mixed">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">X-03</span>
+    <span class="ex-title">FlattenIterator — Iterator custom lazy</span>
+    <span class="diff d-h">Hard</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Implementează <code>Iterator&lt;T&gt;</code> care primește <code>List&lt;List&lt;T&gt;&gt;</code> și iterează flat, lazy (fără pre-flatten).</p>
+<pre><span class="t">List</span>&lt;<span class="t">List</span>&lt;<span class="t">Integer</span>&gt;&gt; nested = List.of(
+    List.of(<span class="n">1</span>,<span class="n">2</span>), List.of(), List.of(<span class="n">3</span>), List.of(<span class="n">4</span>,<span class="n">5</span>,<span class="n">6</span>));
+<span class="c">// next() → 1, 2, 3, 4, 5, 6</span></pre>
+    <button class="hint-btn" onclick="toggleHint(this)">💡 Hint</button>
+    <div class="hint-text">Doi iteratori: outer (pe liste) și inner (pe elementele listei curente). <code>hasNext()</code> avansează la sublista non-vidă următoare.</div>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="k">public class</span> <span class="t">FlattenIterator</span>&lt;<span class="t">T</span>&gt; <span class="k">implements</span> <span class="t">Iterator</span>&lt;<span class="t">T</span>&gt; {
+    <span class="k">private final</span> <span class="t">Iterator</span>&lt;<span class="t">List</span>&lt;<span class="t">T</span>&gt;&gt; outer;
+    <span class="k">private</span> <span class="t">Iterator</span>&lt;<span class="t">T</span>&gt; inner;
+
+    <span class="k">public</span> FlattenIterator(<span class="t">List</span>&lt;<span class="t">List</span>&lt;<span class="t">T</span>&gt;&gt; lists) {
+        outer = lists.iterator();
+        inner = <span class="t">Collections</span>.emptyIterator();
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public boolean</span> hasNext() {
+        <span class="k">while</span> (!inner.hasNext() && outer.hasNext())
+            inner = outer.next().iterator();
+        <span class="k">return</span> inner.hasNext();
+    }
+
+    <span class="a">@Override</span>
+    <span class="k">public</span> <span class="t">T</span> next() {
+        <span class="k">if</span> (!hasNext()) <span class="k">throw new</span> <span class="t">NoSuchElementException</span>();
+        <span class="k">return</span> inner.next();
+    }
+}
+<span class="c">// Zero alocare extra — lazy evaluation!</span></pre>
+    </div>
+  </div></div>
+</div>
+
+<div class="exercise cat-mixed" data-cat="mixed">
+  <div class="ex-header" onclick="toggle(this)">
+    <span class="ex-num">X-04</span>
+    <span class="ex-title">Alege structura potrivită — Design Decisions</span>
+    <span class="diff d-m">Medium</span>
+    <svg class="chv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+  </div>
+  <div class="ex-body"><div class="ex-content">
+    <h4>Cerință</h4>
+    <p>Pentru fiecare scenariu, alege implementarea optimă și justifică:</p>
+    <ul>
+      <li>1. Log events — append-only, citire secvențială</li>
+      <li>2. Autocompletare — prefix search pe cuvinte</li>
+      <li>3. Job scheduler — procesare pe prioritate</li>
+      <li>4. Undo/Redo în editor de text</li>
+      <li>5. IP-uri unice sortate pentru firewall</li>
+      <li>6. Playlist muzicală — next/prev rapid, inserții la mijloc</li>
+    </ul>
+    <button class="sol-btn" onclick="toggleSol(this)">✅ Soluție</button>
+    <div class="sol-code">
+<pre><span class="c">1. ArrayList</span>
+<span class="c">   → append O(1) amortizat, iterare O(n), cache-friendly</span>
+
+<span class="c">2. TreeSet&lt;String&gt; / TreeMap</span>
+<span class="c">   → subSet(prefix, prefix + '\uffff') = prefix search</span>
+<span class="c">   → SAU Trie custom → O(m) lookup, m = prefix length</span>
+
+<span class="c">3. PriorityQueue&lt;Job&gt; + Comparator</span>
+<span class="c">   → O(log n) insert / extract-min</span>
+
+<span class="c">4. Două ArrayDeque-uri (undoStack, redoStack)</span>
+<span class="c">   → push/pop O(1), mai rapid decât Stack (legacy)</span>
+
+<span class="c">5. TreeSet&lt;InetAddress&gt; + Comparator</span>
+<span class="c">   → sortare auto, O(log n), subSet() pt range queries</span>
+
+<span class="c">6. LinkedList&lt;Song&gt;</span>
+<span class="c">   → O(1) next/prev cu ListIterator</span>
+<span class="c">   → O(1) insert/remove la poziția curentă</span></pre>
+    </div>
+  </div></div>
+</div>
+
+</div>
+
+<div class="score-bar">
+  <span>Exerciții: <strong id="total-count">15</strong></span>
+  <span>|</span>
+  <span>Rezolvate: <strong id="solved-count">0</strong></span>
+</div>
+
+<script>
+function toggle(h){h.closest('.exercise').classList.toggle('open')}
+function toggleHint(b){const h=b.nextElementSibling;h.classList.toggle('show');b.textContent=h.classList.contains('show')?'💡 Ascunde':'💡 Hint'}
+function toggleSol(b){const s=b.nextElementSibling;s.classList.toggle('show');b.textContent=s.classList.contains('show')?'✅ Ascunde':'✅ Soluție';if(s.classList.contains('show')){b.dataset.solved='true';document.getElementById('solved-count').textContent=document.querySelectorAll('.sol-btn[data-solved]').length}}
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');const c=b.dataset.cat;document.querySelectorAll('.exercise').forEach(e=>{if(c==='all'||e.dataset.cat===c){e.classList.add('visible')}else{e.classList.remove('visible');e.classList.remove('open')}});document.getElementById('total-count').textContent=document.querySelectorAll('.exercise.visible').length}));
+document.querySelectorAll('.exercise').forEach(e=>e.classList.add('visible'));
+</script>
+</body>
+</html>
