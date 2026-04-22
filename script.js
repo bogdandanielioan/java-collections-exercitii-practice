@@ -1,0 +1,5 @@
+function toggle(h){h.closest('.exercise').classList.toggle('open')}
+function toggleHint(b){const h=b.nextElementSibling;h.classList.toggle('show');b.textContent=h.classList.contains('show')?'💡 Ascunde':'💡 Hint'}
+function toggleSol(b){const s=b.nextElementSibling;s.classList.toggle('show');b.textContent=s.classList.contains('show')?'✅ Ascunde':'✅ Soluție';if(s.classList.contains('show')){b.dataset.solved='true';document.getElementById('solved-count').textContent=document.querySelectorAll('.sol-btn[data-solved]').length}}
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');const c=b.dataset.cat;document.querySelectorAll('.exercise').forEach(e=>{if(c==='all'||e.dataset.cat===c){e.classList.add('visible')}else{e.classList.remove('visible');e.classList.remove('open')}});document.getElementById('total-count').textContent=document.querySelectorAll('.exercise.visible').length}));
+document.querySelectorAll('.exercise').forEach(e=>e.classList.add('visible'));
